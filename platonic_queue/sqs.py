@@ -1,13 +1,14 @@
 import uuid
+from abc import ABC, abstractmethod
 from functools import cached_property
 from typing import Generic, Iterable, List, Optional, TypedDict, TypeVar
 
 import boto3
 from boto3_type_annotations.sqs import Client as SQSClient
 
-# We only can send 10 messages at once to SQS.
 from platonic_queue.queue import Queue
 
+# We only can send 10 messages at once to SQS.
 MAX_ENTRIES_PER_BATCH = 10
 
 T = TypeVar('T')  # noqa: WPS111
@@ -35,7 +36,7 @@ class SQSMessage(TypedDict):
 
 
 class SQSQueue(Queue[T]):
-    """SQS Queue wrapper."""
+    """SQS queue."""
 
     url: str
 
@@ -43,40 +44,52 @@ class SQSQueue(Queue[T]):
         if url is not None:
             self.url = url
 
-        if not self.url:
-            raise ValueError(f'{self}.url is not specified.')
+        if not getattr(self, 'url', None):
+            raise ValueError(f'Please specify {self.__class__.__name__}.url')
 
-    @cached_property
-    def client(self) -> SQSClient:
+    def get_client(self) -> SQSClient:
         """Create boto3 SQS client."""
         return boto3.client('sqs')
 
-    def serialize(self, value: T) -> str:   # noqa: WPS110
-        """Convert arbitrary value to a string."""
-        return value  # type: ignore
+    @cached_property
+    def client(self) -> SQSClient:
+        """Create boto3 SQS client and cache it."""
+        return self.get_client()
 
-    def create_message_id(self) -> str:
+    def create_sqs_message_id(self, instance: T) -> str:
         """Unique SQS message id."""
+        # As per boto3 docs:
+        # > The Id s of a batch request need to be unique within a request.
+        # > This identifier can have up to 80 characters. The following
+        # characters are accepted: alphanumeric characters, hyphens(-),
+        # and underscores (_).
         return uuid.uuid4().hex
 
-    def generate_message(self, serialized_object: str) -> SQSMessage:
-        """Create an SQS message from a string."""
+    def create_sqs_message(self, instance: T) -> SQSMessage:
+        """Create a valid SQS message."""
         return SQSMessage(
-            Id=self.create_message_id(),
-            MessageBody=serialized_object,
+            Id=self.create_sqs_message_id(instance),
+            MessageBody=self.serialize(instance),
         )
 
-    def put_many(self, objects: Iterable[T]):  # noqa: WPS110
-        """Send multiple objects to SQS queue."""
-        serialized_objects = map(self.serialize, objects)
+    def put(self, instance: T) -> None:
+        """Put a message into the queue."""
+        message_body = self.serialize(instance)
 
-        messages = map(self.generate_message, serialized_objects)
+        self.client.send_message(
+            QueueUrl=self.url,
+            MessageBody=message_body,
+        )
+
+    def put_many(self, instances: Iterable[T]):  # noqa: WPS110
+        """Send multiple objects to SQS queue."""
+        messages = map(self.create_sqs_message, instances)
 
         # We only can send MAX_ENTRIES_PER_BATCH messages at once.
         chunks = chunkify(messages, MAX_ENTRIES_PER_BATCH)
 
-        for chunk in chunks:
+        for entries in chunks:
             self.client.send_message_batch(
                 QueueUrl=self.url,
-                Entries=chunk,
+                Entries=entries,
             )
