@@ -6,6 +6,7 @@ import boto3
 from boto3_type_annotations.sqs import Client as SQSClient
 
 from platonic_queue.queue import Queue
+from platonic_queue.serde import SerdeStringMixin
 
 # We only can send 10 messages at once to SQS.
 MAX_ENTRIES_PER_BATCH = 10
@@ -34,7 +35,7 @@ class SQSMessage(TypedDict):
     MessageBody: str  # noqa: WPS115
 
 
-class SQSQueue(Queue[T]):
+class SQSQueue(SerdeStringMixin[T], Queue[T]):
     """SQS queue."""
 
     url: str
