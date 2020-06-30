@@ -10,7 +10,7 @@ style = "https://raw.githubusercontent.com/wemake-services/wemake-python-stylegu
 [tool.poetry]
 name = "platonic-queue"
 version = "0.1.0"
-description = "Abstract"
+description = "Abstract acknowledgement queue concept, implemented over multiple backends."
 license = "MIT"
 
 authors = []
@@ -49,3 +49,6 @@ sphinx-autodoc-typehints = "^1.10"
 doc8 = "^0.8"
 m2r = "^0.2"
 tomlkit = "^0.6"
+
+[tool.poetry.extras]
+sqs = ["boto3", "boto3_type_annotations"]
