@@ -1,7 +1,6 @@
 import uuid
-from abc import ABC, abstractmethod
 from functools import cached_property
-from typing import Generic, Iterable, List, Optional, TypedDict, TypeVar
+from typing import Iterable, List, Optional, TypedDict, TypeVar
 
 import boto3
 from boto3_type_annotations.sqs import Client as SQSClient

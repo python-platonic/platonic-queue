@@ -3,10 +3,6 @@ requires = ["poetry>=1.0"]
 build-backend = "poetry.masonry.api"
 
 
-[tool.nitpick]
-style = "https://raw.githubusercontent.com/wemake-services/wemake-python-styleguide/master/styles/nitpick-style-wemake.toml"
-
-
 [tool.poetry]
 name = "platonic-queue"
 version = "0.1.0"
@@ -41,7 +37,6 @@ mypy = "^0.782"
 
 wemake-python-styleguide = "^0.14"
 flake8-pytest-style = "^1.2"
-nitpick = "^0.22"
 
 safety = "^1.9"
 
