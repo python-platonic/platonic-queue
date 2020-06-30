@@ -93,3 +93,7 @@ class SQSQueue(Queue[T]):
                 QueueUrl=self.url,
                 Entries=entries,
             )
+
+    def get(self) -> T:
+        """Fetch a message from queue."""
+        raise NotImplementedError()
