@@ -4,8 +4,20 @@ from typing import Generic, Iterable, TypeVar
 T = TypeVar('T')  # noqa: WPS111
 
 
-class Queue(ABC, Generic[T]):
-    """Acknowledgement Queue."""
+class BaseQueue(ABC, Generic[T]):
+    """Base class for queues."""
+
+
+class InputQueue(BaseQueue[T]):
+    """Queue to read stuff from."""
+
+    @abstractmethod
+    def get(self) -> T:
+        """Get next instance from queue."""
+
+
+class OutputQueue(BaseQueue[T]):
+    """Queue to write stuff into."""
 
     @abstractmethod
     def put(self, instance: T) -> None:
@@ -16,6 +28,6 @@ class Queue(ABC, Generic[T]):
         for instance in iterable:
             self.put(instance)
 
-    @abstractmethod
-    def get(self) -> T:
-        """Get next instance from queue."""
+
+class InputOutputQueue(InputQueue[T], OutputQueue[T]):
+    """Queue to write to and to read from."""
