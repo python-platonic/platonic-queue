@@ -6,7 +6,7 @@ from tests.test_sqs.fibonacci_queue import FibonacciQueue
 
 
 @mock_sqs
-def test_moto_put():
+def test_moto_put_many():
     client: SQSClient = boto3.client('sqs')
     sqs_queue = client.create_queue(QueueName='mock')
 
@@ -20,3 +20,20 @@ def test_moto_put():
     )
 
     assert response['Messages'][0]['Body'] == '1'
+
+
+@mock_sqs
+def test_moto_put():
+    client: SQSClient = boto3.client('sqs')
+    sqs_queue = client.create_queue(QueueName='mock')
+
+    url = sqs_queue['QueueUrl']
+
+    queue = FibonacciQueue(url=url)
+    queue.put(21)
+
+    response = client.receive_message(
+        QueueUrl=url,
+    )
+
+    assert response['Messages'][0]['Body'] == '21'
