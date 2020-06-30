@@ -1,10 +1,11 @@
 import uuid
 from functools import cached_property
-from typing import Iterable, List, Optional, TypedDict, TypeVar
+from typing import Iterable, Optional, TypedDict, TypeVar
 
 import boto3
 from boto3_type_annotations.sqs import Client as SQSClient
 
+from platonic_queue.chunkify import chunkify
 from platonic_queue.queue import Queue
 from platonic_queue.serde import SerdeStringMixin
 
@@ -12,20 +13,6 @@ from platonic_queue.serde import SerdeStringMixin
 MAX_ENTRIES_PER_BATCH = 10
 
 T = TypeVar('T')  # noqa: WPS111
-
-
-def chunkify(lst: Iterable[T], chunk_size: int) -> Iterable[List[T]]:
-    """Split list into chunks of size not larger than the given number."""
-    chunk = []
-    for item in lst:  # noqa: WPS110
-        chunk.append(item)
-
-        if len(chunk) >= chunk_size:
-            yield chunk
-            chunk = []
-
-    if chunk:
-        yield chunk
 
 
 class SQSMessage(TypedDict):
