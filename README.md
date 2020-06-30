@@ -22,9 +22,9 @@ pip install platonic-queue
 Showcase how your project can be used:
 
 ```python
-from platonic_queue.sqs import SQSQueue
+from platonic_queue.sqs import SQSBaseQueue
 
-class NumbersQueue(SQSQueue[int]):
+class NumbersQueue(SQSBaseQueue[int]):
     """Sending numbers."""
     url = '...'   # SQS queue URL
 

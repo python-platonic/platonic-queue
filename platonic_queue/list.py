@@ -1,11 +1,11 @@
 from typing import List, TypeVar
 
-from platonic_queue.queue import Queue
+from platonic_queue.queue import InputOutputQueue
 
 T = TypeVar('T')
 
 
-class LIFOListQueue(Queue[T]):
+class LIFOListQueue(InputOutputQueue[T]):
     """LIFO queue implemented upon a Python list."""
 
     lst: List[T]

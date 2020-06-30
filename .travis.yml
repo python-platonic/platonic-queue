@@ -8,6 +8,7 @@ python:
 
 env:
   - POETRY_VERSION=1.0.5
+  - AWS_REGION=us-west-2
 
 before_install:
   - pip freeze | xargs pip uninstall -y

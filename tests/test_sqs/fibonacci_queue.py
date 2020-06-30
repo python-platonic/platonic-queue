@@ -1,7 +1,7 @@
-from platonic_queue.sqs import SQSQueue
+from platonic_queue.sqs import SQSInputOutputQueue
 
 
-class FibonacciQueue(SQSQueue[int]):
+class FibonacciQueue(SQSInputOutputQueue[int]):
     """Queue to store Fibonacci numbers."""
 
     serialize = str     # type: ignore
