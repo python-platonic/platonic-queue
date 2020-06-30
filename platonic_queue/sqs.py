@@ -6,8 +6,8 @@ import boto3
 from boto3_type_annotations.sqs import Client as SQSClient
 
 from platonic_queue.chunkify import chunkify
-from platonic_queue.queue import BaseQueue
-from platonic_queue.serde import SerdeStringMixin
+from platonic_queue.queue import BaseQueue, InputQueue, OutputQueue
+from platonic_queue.serde import SerializeToString, DeserializeFromString
 
 # We only can send 10 messages at once to SQS.
 MAX_ENTRIES_PER_BATCH = 10
@@ -22,7 +22,7 @@ class SQSMessage(TypedDict):
     MessageBody: str  # noqa: WPS115
 
 
-class SQSQueue(SerdeStringMixin[T], BaseQueue[T]):
+class SQSBaseQueue(BaseQueue[T]):
     """SQS queue."""
 
     url: str
@@ -42,6 +42,14 @@ class SQSQueue(SerdeStringMixin[T], BaseQueue[T]):
     def client(self) -> SQSClient:
         """Create boto3 SQS client and cache it."""
         return self.get_client()
+
+
+class SQSOutputQueue(
+    SerializeToString[T],
+    OutputQueue[T],
+    SQSBaseQueue[T],
+):
+    """Write messages to SQS."""
 
     def create_sqs_message_id(self, instance: T) -> str:
         """Unique SQS message id."""
@@ -81,6 +89,18 @@ class SQSQueue(SerdeStringMixin[T], BaseQueue[T]):
                 Entries=entries,
             )
 
+
+class SQSInputQueue(
+    DeserializeFromString[T],
+    InputQueue[T],
+    SQSBaseQueue[T],
+):
+    """Read messages from SQS."""
+
     def get(self) -> T:
         """Fetch a message from queue."""
         raise NotImplementedError()
+
+
+class SQSInputOutputQueue(SQSInputQueue[T], SQSOutputQueue[T]):
+    """Read messages from SQS and write messages there."""
