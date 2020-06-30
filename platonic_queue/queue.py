@@ -23,3 +23,7 @@ class Queue(ABC, Generic[T]):
         """Put multiple messages into the queue."""
         for instance in iterable:
             self.put(instance)
+
+    @abstractmethod
+    def get(self) -> T:
+        """Get next instance from queue."""
