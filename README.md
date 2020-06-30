@@ -22,10 +22,19 @@ pip install platonic-queue
 Showcase how your project can be used:
 
 ```python
-from platonic_queue.example import some_function
+from platonic_queue.sqs import SQSQueue
 
-print(some_function(3, 4))
-# => 7
+class NumbersQueue(SQSQueue[int]):
+    """Sending numbers."""
+    url = '...'   # SQS queue URL
+
+    serialize =   str   # type: ignore
+    deserialize = int   # type: ignore
+
+queue = NumbersQueue()
+queue.put(5)
+queue.get()
+# 5
 ```
 
 ## License
