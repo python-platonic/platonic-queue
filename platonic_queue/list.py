@@ -1,6 +1,6 @@
 from typing import List, TypeVar
 
-from platonic_queue.queue import BaseQueue, InputOutputQueue
+from platonic_queue.queue import InputOutputQueue
 
 T = TypeVar('T')
 

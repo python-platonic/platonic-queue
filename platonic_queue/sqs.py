@@ -7,7 +7,7 @@ from boto3_type_annotations.sqs import Client as SQSClient
 
 from platonic_queue.chunkify import chunkify
 from platonic_queue.queue import BaseQueue, InputQueue, OutputQueue
-from platonic_queue.serde import SerializeToString, DeserializeFromString
+from platonic_queue.serde import DeserializeFromString, SerializeToString
 
 # We only can send 10 messages at once to SQS.
 MAX_ENTRIES_PER_BATCH = 10
