@@ -2,14 +2,7 @@ import boto3
 from boto3_type_annotations.sqs import Client as SQSClient
 from moto import mock_sqs
 
-from platonic_queue.sqs import SQSQueue
-
-
-class FibonacciQueue(SQSQueue[int]):
-    """Queue to store Fibonacci numbers."""
-
-    serialize = str     # type: ignore
-    deserialize = int   # type: ignore
+from tests.test_sqs.fibonacci_queue import FibonacciQueue
 
 
 @mock_sqs
